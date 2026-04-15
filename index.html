@@ -1,6 +1,159 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kōdo — Your AI Life OS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S. — AI Life OS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- CRT scanline overlay -->
+  <div class="scanline" aria-hidden="true"></div>
+
+  <div class="hud" id="hud">
+
+    <!-- ── HEADER ──────────────────────────────────────── -->
+    <header class="hud-header">
+      <div class="header-left">
+        <div class="jarvis-logo">
+          <span class="logo-letter">J</span><span class="logo-separator">.</span><span class="logo-letter">A</span><span class="logo-separator">.</span><span class="logo-letter">R</span><span class="logo-separator">.</span><span class="logo-letter">V</span><span class="logo-separator">.</span><span class="logo-letter">I</span><span class="logo-separator">.</span><span class="logo-letter">S</span><span class="logo-separator">.</span>
+        </div>
+        <p class="jarvis-tagline">Just A Rather Very Intelligent System</p>
+      </div>
+      <div class="header-right">
+        <div class="status-chip" id="statusChip">
+          <span class="status-dot" id="statusDot"></span>
+          <span class="status-label" id="statusLabel">STANDBY</span>
+        </div>
+        <div class="api-badge" id="apiBadge">API ──</div>
+      </div>
+    </header>
+
+    <!-- ── BODY ───────────────────────────────────────── -->
+    <div class="hud-body">
+
+      <!-- Left column: Reactor + Controls -->
+      <aside class="left-col">
+
+        <!-- Arc Reactor -->
+        <div class="reactor-wrap">
+          <div class="reactor" id="reactor">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="ring r4"></div>
+            <div class="core">
+              <div class="core-glow"></div>
+              <div class="core-dot"></div>
+            </div>
+          </div>
+          <!-- Corner ticks around reactor -->
+          <span class="tick tl"></span>
+          <span class="tick tr"></span>
+          <span class="tick bl"></span>
+          <span class="tick br"></span>
+        </div>
+
+        <!-- Waveform visualizer -->
+        <div class="waveform-wrap">
+          <div class="waveform" id="waveform"></div>
+          <div class="waveform-label" id="waveLabel">——— AUDIO INPUT ———</div>
+        </div>
+
+        <!-- System stats -->
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-label">UPTIME</div>
+            <div class="stat-value" id="uptime">00:00:00</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">QUERIES</div>
+            <div class="stat-value" id="queryCount">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">MODEL</div>
+            <div class="stat-value model-val">OPUS 4.6</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">TOKENS</div>
+            <div class="stat-value" id="tokenCount">—</div>
+          </div>
+        </div>
+
+        <!-- Voice activation button -->
+        <button class="mic-btn" id="micBtn" title="Hold or click to speak (or press Space)">
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          <span class="mic-label" id="micLabel">ACTIVATE VOICE</span>
+        </button>
+
+        <!-- Speech not supported notice (hidden by default) -->
+        <p class="no-speech-notice" id="noSpeechNotice" style="display:none">
+          Voice input unavailable in this browser.<br>Use the text field below.
+        </p>
+
+      </aside>
+
+      <!-- Right column: Chat log -->
+      <section class="right-col">
+
+        <div class="log-header">
+          <span class="log-title">COMMUNICATION LOG</span>
+          <button class="clear-btn" id="clearBtn" title="Clear conversation">CLR</button>
+        </div>
+
+        <div class="transcript" id="transcript" role="log" aria-live="polite">
+          <!-- Boot message injected by JS -->
+        </div>
+
+        <!-- Live streaming response display -->
+        <div class="live-response" id="liveResponse" style="display:none">
+          <span class="live-prefix">JARVIS ▶</span>
+          <span class="live-text" id="liveText"></span><span class="cursor" aria-hidden="true">█</span>
+        </div>
+
+        <!-- Text input -->
+        <div class="input-row">
+          <input
+            type="text"
+            id="textInput"
+            class="text-input"
+            placeholder="Enter command or query…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="send-btn" id="sendBtn" title="Send (Enter)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- ── FOOTER ─────────────────────────────────────── -->
+    <footer class="hud-footer">
+      <span class="footer-left">KŌDO · AI LIFE OS · v1.0</span>
+      <span class="footer-center" id="footerStatus">ALL SYSTEMS NOMINAL</span>
+      <span class="footer-right">CLAUDE OPUS 4.6</span>
+    </footer>
+
+    <!-- Corner decorations -->
+    <span class="corner-deco c-tl" aria-hidden="true"></span>
+    <span class="corner-deco c-tr" aria-hidden="true"></span>
+    <span class="corner-deco c-bl" aria-hidden="true"></span>
+    <span class="corner-deco c-br" aria-hidden="true"></span>
+
+  </div><!-- .hud -->
+
+  <script src="jarvis.js"></script>
+</body>
+</html>
